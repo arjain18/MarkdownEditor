@@ -20,6 +20,11 @@ namespace MarkdownEditor.WinForms
         private System.Windows.Forms.Button btnTogglePreview;
         private System.Windows.Forms.Button btnExit;
 
+        // UI additions: opacity slider, label and tooltips
+        private System.Windows.Forms.TrackBar trkOpacity;
+        private System.Windows.Forms.Label lblOpacity;
+        private System.Windows.Forms.ToolTip toolTip1;
+
         /// <summary>
         ///  Clean up any resources being used.
         /// </summary>
@@ -54,12 +59,18 @@ namespace MarkdownEditor.WinForms
             btnTogglePreview = new System.Windows.Forms.Button();
             btnExit = new System.Windows.Forms.Button();
 
+            // New controls
+            trkOpacity = new System.Windows.Forms.TrackBar();
+            lblOpacity = new System.Windows.Forms.Label();
+            toolTip1 = new System.Windows.Forms.ToolTip(components);
+
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
             statusStrip1.SuspendLayout();
             topPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)trkOpacity).BeginInit();
             SuspendLayout();
             // 
             // topPanel
@@ -68,7 +79,10 @@ namespace MarkdownEditor.WinForms
             topPanel.Height = 56;
             topPanel.Padding = new Padding(12, 8, 12, 8);
             topPanel.BackColor = System.Drawing.Color.Transparent;
+            // Add controls in z-order: exit will be repositioned later
             topPanel.Controls.Add(btnExit);
+            topPanel.Controls.Add(lblOpacity);
+            topPanel.Controls.Add(trkOpacity);
             topPanel.Controls.Add(btnTogglePreview);
             topPanel.Controls.Add(btnSave);
             topPanel.Controls.Add(btnOpen);
@@ -86,6 +100,8 @@ namespace MarkdownEditor.WinForms
             btnNew.Height = 40;
             btnNew.Location = new System.Drawing.Point(12, 8);
             btnNew.Click += newToolStripMenuItem_Click;
+            // Tooltip
+            toolTip1.SetToolTip(btnNew, "Create a new document");
             // 
             // btnOpen
             // 
@@ -99,6 +115,7 @@ namespace MarkdownEditor.WinForms
             btnOpen.Height = 40;
             btnOpen.Location = new System.Drawing.Point(132, 8);
             btnOpen.Click += openToolStripMenuItem_Click;
+            toolTip1.SetToolTip(btnOpen, "Open an existing markdown file");
             // 
             // btnSave
             // 
@@ -112,6 +129,7 @@ namespace MarkdownEditor.WinForms
             btnSave.Height = 40;
             btnSave.Location = new System.Drawing.Point(244, 8);
             btnSave.Click += saveToolStripMenuItem_Click;
+            toolTip1.SetToolTip(btnSave, "Save current document");
             // 
             // btnTogglePreview
             // 
@@ -125,20 +143,42 @@ namespace MarkdownEditor.WinForms
             btnTogglePreview.Height = 40;
             btnTogglePreview.Location = new System.Drawing.Point(356, 8);
             btnTogglePreview.Click += tsbTogglePreview_Click;
+            toolTip1.SetToolTip(btnTogglePreview, "Show or hide the HTML preview");
+            // 
+            // trkOpacity
+            // 
+            trkOpacity.Minimum = 50;
+            trkOpacity.Maximum = 100;
+            trkOpacity.Value = 95;
+            trkOpacity.TickFrequency = 5;
+            trkOpacity.Width = 140;
+            trkOpacity.Height = 40;
+            trkOpacity.Location = new System.Drawing.Point(506, 8);
+            trkOpacity.Scroll += new System.EventHandler(trkOpacity_ValueChanged);
+            toolTip1.SetToolTip(trkOpacity, "Adjust window transparency (50% - 100%)");
+            // 
+            // lblOpacity
+            // 
+            lblOpacity.AutoSize = true;
+            lblOpacity.Location = new System.Drawing.Point(656, 18);
+            lblOpacity.Width = 48;
+            lblOpacity.Text = "95%";
+            toolTip1.SetToolTip(lblOpacity, "Current transparency");
             // 
             // btnExit
             // 
             btnExit.FlatStyle = FlatStyle.Flat;
             btnExit.FlatAppearance.BorderSize = 0;
             btnExit.BackColor = Color.Transparent;
-            btnExit.ForeColor = Color.FromArgb(120, 124, 139);
+            btnExit.ForeColor = Color.FromArgb(196, 40, 28); // more visible exit color
             btnExit.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular);
-            btnExit.Text = "\u238b  Exit";
+            btnExit.Text = "Exit";
             btnExit.Width = 90;
             btnExit.Height = 40;
             btnExit.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnExit.Location = new System.Drawing.Point(Top - 1, 8); // placeholder, will be repositioned below
             btnExit.Click += exitToolStripMenuItem_Click;
+            toolTip1.SetToolTip(btnExit, "Exit application (you will be asked to confirm)");
             // We'll reposition btnExit after layout to the right side.
             // 
             // splitContainer1
@@ -225,10 +265,12 @@ namespace MarkdownEditor.WinForms
             Name = "MainForm";
             Text = "Markdown Editor";
             topPanel.ResumeLayout(false);
+            topPanel.PerformLayout();
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)trkOpacity).EndInit();
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
             ResumeLayout(false);

@@ -12,6 +12,9 @@ namespace MarkdownEditor.WinForms
         private bool isDirty;
         private string? previewFilePath;
 
+        // Suppress the second prompt when we've already confirmed exit
+        private bool _suppressClosePrompt = false;
+
         public MainForm()
         {
             InitializeComponent();
@@ -25,9 +28,32 @@ namespace MarkdownEditor.WinForms
             rtbEditor.Margin = new Padding(12);
 
             // Slightly increase form transparency for a modern feel
-            this.Opacity = 0.95D;
+            this.Opacity = trkOpacity != null ? trkOpacity.Value / 100.0 : 0.95D;
+            UpdateOpacityLabel();
 
             NewFile();
+        }
+
+        private void UpdateOpacityLabel()
+        {
+            if (lblOpacity != null && trkOpacity != null)
+            {
+                lblOpacity.Text = $"{trkOpacity.Value}%";
+            }
+        }
+
+        private void trkOpacity_ValueChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (trkOpacity != null)
+                {
+                    this.Opacity = trkOpacity.Value / 100.0;
+                    UpdateOpacityLabel();
+                    toolStripStatusLabel1.Text = $"Transparency: {trkOpacity.Value}%";
+                }
+            }
+            catch { /* ignore UI update errors */ }
         }
 
         private void NewFile()
@@ -111,7 +137,8 @@ namespace MarkdownEditor.WinForms
                 var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
                 var body = Markdown.ToHtml(markdown, pipeline);
 
-                var html = $@"<!doctype html>
+                var html = $@"
+<!doctype html>
 <html>
 <head>
 <meta charset=""utf-8"">
@@ -282,7 +309,16 @@ img {{
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Close();
+            // First ask about saving changes
+            if (!PromptSaveIfNeeded()) return;
+
+            // Confirm exit once; if confirmed, suppress the OnFormClosing prompt
+            var result = MessageBox.Show(this, "Do you really want to exit the application?", "Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result == DialogResult.Yes)
+            {
+                _suppressClosePrompt = true;
+                Close();
+            }
         }
 
         private void rtbEditor_TextChanged(object sender, EventArgs e)
@@ -302,6 +338,14 @@ img {{
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            // If we already confirmed exit via the Exit button, skip the second prompt
+            if (_suppressClosePrompt)
+            {
+                _suppressClosePrompt = false;
+                base.OnFormClosing(e);
+                return;
+            }
+
             if (!PromptSaveIfNeeded())
             {
                 e.Cancel = true;
