@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Project/assembly display name -->
+    <AssemblyTitle>Markdown Editor</AssemblyTitle>
+    <!-- AssemblyName and RootNamespace typically omit spaces for CLR compatibility;
+         AssemblyTitle is used for a human-friendly title. Adjust if you prefer a space in the assembly name. -->
+    <AssemblyName>MarkdownEditor</AssemblyName>
+    <RootNamespace>MarkdownEditor</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Markdig" Version="0.44.0" />
+  </ItemGroup>
+
+</Project>
