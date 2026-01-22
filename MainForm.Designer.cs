@@ -8,6 +8,7 @@ namespace MarkdownEditor.WinForms
         private System.Windows.Forms.WebBrowser webPreview;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelVersion;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.Timer renderTimer;
@@ -18,6 +19,7 @@ namespace MarkdownEditor.WinForms
         private System.Windows.Forms.Button btnOpen;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnTogglePreview;
+        private System.Windows.Forms.Button btnAbout;
         private System.Windows.Forms.Button btnExit;
 
         // UI additions: opacity slider, label and tooltips
@@ -48,6 +50,7 @@ namespace MarkdownEditor.WinForms
             webPreview = new System.Windows.Forms.WebBrowser();
             statusStrip1 = new System.Windows.Forms.StatusStrip();
             toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            toolStripStatusLabelVersion = new System.Windows.Forms.ToolStripStatusLabel();
             openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             renderTimer = new System.Windows.Forms.Timer(components);
@@ -57,6 +60,7 @@ namespace MarkdownEditor.WinForms
             btnOpen = new System.Windows.Forms.Button();
             btnSave = new System.Windows.Forms.Button();
             btnTogglePreview = new System.Windows.Forms.Button();
+            btnAbout = new System.Windows.Forms.Button();
             btnExit = new System.Windows.Forms.Button();
 
             // New controls
@@ -79,14 +83,17 @@ namespace MarkdownEditor.WinForms
             topPanel.Height = 56;
             topPanel.Padding = new Padding(12, 8, 12, 8);
             topPanel.BackColor = System.Drawing.Color.Transparent;
-            // Add controls in z-order: exit will be repositioned later
-            topPanel.Controls.Add(btnExit);
-            topPanel.Controls.Add(lblOpacity);
-            topPanel.Controls.Add(trkOpacity);
-            topPanel.Controls.Add(btnTogglePreview);
-            topPanel.Controls.Add(btnSave);
-            topPanel.Controls.Add(btnOpen);
+
+            // Create and add controls to topPanel in logical left-to-right order.
+            // We'll position the right-side buttons after adding topPanel to the form so ClientSize is known.
             topPanel.Controls.Add(btnNew);
+            topPanel.Controls.Add(btnOpen);
+            topPanel.Controls.Add(btnSave);
+            topPanel.Controls.Add(btnTogglePreview);
+            topPanel.Controls.Add(trkOpacity);
+            topPanel.Controls.Add(lblOpacity);
+            topPanel.Controls.Add(btnAbout);
+            topPanel.Controls.Add(btnExit);
             // 
             // btnNew
             // 
@@ -100,7 +107,6 @@ namespace MarkdownEditor.WinForms
             btnNew.Height = 40;
             btnNew.Location = new System.Drawing.Point(12, 8);
             btnNew.Click += newToolStripMenuItem_Click;
-            // Tooltip
             toolTip1.SetToolTip(btnNew, "Create a new document");
             // 
             // btnOpen
@@ -165,6 +171,21 @@ namespace MarkdownEditor.WinForms
             lblOpacity.Text = "95%";
             toolTip1.SetToolTip(lblOpacity, "Current transparency");
             // 
+            // btnAbout
+            // 
+            btnAbout.FlatStyle = FlatStyle.Flat;
+            btnAbout.FlatAppearance.BorderSize = 0;
+            btnAbout.BackColor = Color.FromArgb(250, 250, 252);
+            btnAbout.ForeColor = Color.FromArgb(15, 23, 36);
+            btnAbout.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular);
+            btnAbout.Text = "\u2139  About";
+            btnAbout.Width = 100;
+            btnAbout.Height = 40;
+            btnAbout.Click += btnAbout_Click;
+            toolTip1.SetToolTip(btnAbout, "About this application");
+            // keep anchor set; Location will be assigned after Controls are added to the form
+            btnAbout.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            // 
             // btnExit
             // 
             btnExit.FlatStyle = FlatStyle.Flat;
@@ -176,10 +197,8 @@ namespace MarkdownEditor.WinForms
             btnExit.Width = 90;
             btnExit.Height = 40;
             btnExit.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnExit.Location = new System.Drawing.Point(Top - 1, 8); // placeholder, will be repositioned below
             btnExit.Click += exitToolStripMenuItem_Click;
             toolTip1.SetToolTip(btnExit, "Exit application (you will be asked to confirm)");
-            // We'll reposition btnExit after layout to the right side.
             // 
             // splitContainer1
             // 
@@ -217,7 +236,7 @@ namespace MarkdownEditor.WinForms
             // statusStrip1
             // 
             statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabel1 });
+            statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabel1, toolStripStatusLabelVersion });
             statusStrip1.Location = new System.Drawing.Point(0, 725);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Padding = new System.Windows.Forms.Padding(8, 0, 1, 0);
@@ -230,6 +249,13 @@ namespace MarkdownEditor.WinForms
             toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             toolStripStatusLabel1.Size = new System.Drawing.Size(78, 23);
             toolStripStatusLabel1.Text = "Ready";
+            // 
+            // toolStripStatusLabelVersion
+            // 
+            toolStripStatusLabelVersion.Name = "toolStripStatusLabelVersion";
+            toolStripStatusLabelVersion.Size = new System.Drawing.Size(100, 23);
+            toolStripStatusLabelVersion.Text = "Version: 1.0.0";
+            toolStripStatusLabelVersion.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             // 
             // openFileDialog1
             // 
@@ -250,14 +276,24 @@ namespace MarkdownEditor.WinForms
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(954, 767);
 
-            // Reposition btnExit to the right side of the topPanel now that we know width
-            // We'll set it after adding controls so the anchor works predictably.
-            btnExit.Location = new System.Drawing.Point(this.ClientSize.Width - btnExit.Width - 16, 8);
-            btnExit.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-
+            // Add controls to form
             Controls.Add(splitContainer1);
             Controls.Add(statusStrip1);
             Controls.Add(topPanel);
+
+            // Now that ClientSize and control sizes are known, position the right-side buttons.
+            // Put Exit at extreme right and About immediately to its left.
+            btnExit.Location = new System.Drawing.Point(this.ClientSize.Width - btnExit.Width - 16, 8);
+            btnAbout.Location = new System.Drawing.Point(btnExit.Left - btnAbout.Width - 8, 8);
+
+            // Ensure they are visible on top and respond to resizing.
+            btnExit.BringToFront();
+            btnAbout.BringToFront();
+            this.Resize += (s, e) =>
+            {
+                btnExit.Location = new System.Drawing.Point(this.ClientSize.Width - btnExit.Width - 16, 8);
+                btnAbout.Location = new System.Drawing.Point(btnExit.Left - btnAbout.Width - 8, 8);
+            };
 
             // Make the window slightly transparent to achieve a modern, airy feel.
             this.Opacity = 0.95D;

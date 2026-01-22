@@ -12,22 +12,17 @@ namespace MarkdownEditor.WinForms
         private bool isDirty;
         private string? previewFilePath;
 
-        // Suppress the second prompt when we've already confirmed exit
+        // suppress double prompt when user confirmed exit via About/Exit flow
         private bool _suppressClosePrompt = false;
 
         public MainForm()
         {
             InitializeComponent();
-
-            // enable navigation for the preview HTML we write at runtime
             webPreview.AllowNavigation = true;
-
-            // Visual tuning: lighter editor background and subtle borderless look
             rtbEditor.BackColor = Color.FromArgb(250, 250, 252);
             rtbEditor.BorderStyle = BorderStyle.None;
             rtbEditor.Margin = new Padding(12);
 
-            // Slightly increase form transparency for a modern feel
             this.Opacity = trkOpacity != null ? trkOpacity.Value / 100.0 : 0.95D;
             UpdateOpacityLabel();
 
@@ -305,6 +300,12 @@ img {{
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileAs();
+        }
+
+        private void btnAbout_Click(object sender, EventArgs e)
+        {
+            using var about = new AboutForm();
+            about.ShowDialog(this);
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
