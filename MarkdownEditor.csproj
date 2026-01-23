@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <None Update="Resources\Markdown.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

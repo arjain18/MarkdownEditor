@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Markdig;
+using System.Diagnostics;
 
 namespace MarkdownEditor.WinForms
 {
@@ -23,6 +24,7 @@ namespace MarkdownEditor.WinForms
         {
             InitializeComponent();
             webPreview.AllowNavigation = true;
+            webPreview.Navigating += webPreview_Navigating;
             rtbEditor.BackColor = Color.FromArgb(250, 250, 252);
             rtbEditor.BorderStyle = BorderStyle.None;
             rtbEditor.Margin = new Padding(12);
@@ -460,6 +462,30 @@ img {{
         {
             renderTimer.Stop();
             UpdatePreview();
+        }
+
+        private void webPreview_Navigating(object sender, WebBrowserNavigatingEventArgs e)
+        {
+            try
+            {
+                // Check if the navigation is triggered by a hyperlink click
+                if (e.Url != null && !e.Url.ToString().StartsWith("file://", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Cancel the default navigation
+                    e.Cancel = true;
+
+                    // Open the link in the default browser
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = e.Url.ToString(),
+                        UseShellExecute = true
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"Failed to open link: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
