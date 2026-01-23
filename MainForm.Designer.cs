@@ -236,7 +236,8 @@ namespace MarkdownEditor.WinForms
             // statusStrip1
             // 
             statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabel1, toolStripStatusLabelVersion });
+            // Only show the "Ready" label in the status bar per user preference.
+            statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabel1 });
             statusStrip1.Location = new System.Drawing.Point(0, 725);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Padding = new System.Windows.Forms.Padding(8, 0, 1, 0);
@@ -252,10 +253,13 @@ namespace MarkdownEditor.WinForms
             // 
             // toolStripStatusLabelVersion
             // 
+            // Keep the version label instance available in code but do not add it to the status strip,
+            // so the version string is not displayed in the status bar.
             toolStripStatusLabelVersion.Name = "toolStripStatusLabelVersion";
             toolStripStatusLabelVersion.Size = new System.Drawing.Size(100, 23);
             toolStripStatusLabelVersion.Text = "Version: 1.0.0";
             toolStripStatusLabelVersion.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            toolStripStatusLabelVersion.Visible = false;
             // 
             // openFileDialog1
             // 

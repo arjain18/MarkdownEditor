@@ -22,71 +22,83 @@ namespace MarkdownEditor.WinForms
 
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            lblAppName = new System.Windows.Forms.Label();
-            lblVersion = new System.Windows.Forms.Label();
-            linkWebsite = new System.Windows.Forms.LinkLabel();
-            txtDescription = new System.Windows.Forms.TextBox();
-            btnClose = new System.Windows.Forms.Button();
-
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutForm));
+            lblAppName = new Label();
+            lblVersion = new Label();
+            linkWebsite = new LinkLabel();
+            txtDescription = new TextBox();
+            btnClose = new Button();
             SuspendLayout();
             // 
             // lblAppName
             // 
-            lblAppName.AutoSize = true;
-            lblAppName.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            lblAppName.Location = new System.Drawing.Point(16, 16);
+            lblAppName.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+            lblAppName.Location = new Point(18, 16);
             lblAppName.Name = "lblAppName";
-            lblAppName.Size = new System.Drawing.Size(180, 28);
+            lblAppName.Size = new Size(640, 58);
+            lblAppName.TabIndex = 0;
             lblAppName.Text = "Markdown Editor";
+            lblAppName.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // lblVersion
             // 
-            lblVersion.AutoSize = true;
-            lblVersion.Location = new System.Drawing.Point(18, 52);
+            lblVersion.Font = new Font("Segoe UI", 10F);
+            lblVersion.Location = new Point(18, 88);
             lblVersion.Name = "lblVersion";
-            lblVersion.Size = new System.Drawing.Size(80, 20);
+            lblVersion.Size = new Size(640, 43);
+            lblVersion.TabIndex = 1;
             lblVersion.Text = "Version: 1.0.0";
+            lblVersion.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // linkWebsite
             // 
-            linkWebsite.AutoSize = true;
-            linkWebsite.Location = new System.Drawing.Point(18, 80);
+            linkWebsite.Font = new Font("Segoe UI", 9F);
+            linkWebsite.Location = new Point(18, 131);
             linkWebsite.Name = "linkWebsite";
-            linkWebsite.Size = new System.Drawing.Size(150, 20);
-            linkWebsite.Text = "https://example.com";
+            linkWebsite.Size = new Size(640, 51);
+            linkWebsite.TabIndex = 2;
+            linkWebsite.TabStop = true;
+            linkWebsite.Text = "https://www.sqamanual.com";
+            linkWebsite.TextAlign = ContentAlignment.MiddleLeft;
             linkWebsite.LinkClicked += linkWebsite_LinkClicked;
             // 
             // txtDescription
             // 
-            txtDescription.Location = new System.Drawing.Point(18, 110);
+            txtDescription.BackColor = SystemColors.Control;
+            txtDescription.BorderStyle = BorderStyle.FixedSingle;
+            txtDescription.Font = new Font("Segoe UI", 10F);
+            txtDescription.Location = new Point(18, 203);
             txtDescription.Multiline = true;
+            txtDescription.Name = "txtDescription";
             txtDescription.ReadOnly = true;
-            txtDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            txtDescription.Size = new System.Drawing.Size(420, 120);
-            txtDescription.Text = "Simple markdown editor with live preview. Edit, save, and preview markdown files.";
+            txtDescription.Size = new Size(640, 284);
+            txtDescription.TabIndex = 3;
+            txtDescription.TabStop = false;
+            txtDescription.Text = resources.GetString("txtDescription.Text");
             // 
             // btnClose
             // 
-            btnClose.Text = "Close";
-            btnClose.Width = 100;
-            btnClose.Height = 34;
-            btnClose.Location = new System.Drawing.Point(338, 240);
             btnClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnClose.Location = new Point(584, 505);
+            btnClose.Name = "btnClose";
+            btnClose.Size = new Size(100, 45);
+            btnClose.TabIndex = 4;
+            btnClose.Text = "Close";
             btnClose.Click += btnClose_Click;
             // 
             // AboutForm
             // 
-            ClientSize = new System.Drawing.Size(460, 290);
+            ClientSize = new Size(686, 566);
             Controls.Add(lblAppName);
             Controls.Add(lblVersion);
             Controls.Add(linkWebsite);
             Controls.Add(txtDescription);
             Controls.Add(btnClose);
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
-            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            Name = "AboutForm";
+            StartPosition = FormStartPosition.CenterParent;
             Text = "About";
             ResumeLayout(false);
             PerformLayout();

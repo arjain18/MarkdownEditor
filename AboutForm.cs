@@ -17,7 +17,7 @@ namespace MarkdownEditor.WinForms
         {
             try
             {
-                var url = (sender as LinkLabel)?.Text ?? "https://example.com";
+                var url = (sender as LinkLabel)?.Text ?? "www.sqamanual.com";
                 Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
             }
             catch { /* ignore */ }
