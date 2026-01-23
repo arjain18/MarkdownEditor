@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Markdig;
 
@@ -11,6 +12,9 @@ namespace MarkdownEditor.WinForms
         private string currentFilePath;
         private bool isDirty;
         private string? previewFilePath;
+
+        // Indicates the initial welcome/template content is shown (not a real file path).
+        private bool isWelcomeTemplate = false;
 
         // suppress double prompt when user confirmed exit via About/Exit flow
         private bool _suppressClosePrompt = false;
@@ -26,7 +30,12 @@ namespace MarkdownEditor.WinForms
             this.Opacity = trkOpacity != null ? trkOpacity.Value / 100.0 : 0.95D;
             UpdateOpacityLabel();
 
-            NewFile();
+            // Start maximized and enable form-level shortcut handling
+            this.WindowState = FormWindowState.Maximized;
+            this.KeyPreview = true;
+            this.KeyDown += MainForm_KeyDown;
+
+            ShowWelcome();
         }
 
         private void UpdateOpacityLabel()
@@ -51,14 +60,47 @@ namespace MarkdownEditor.WinForms
             catch { /* ignore UI update errors */ }
         }
 
+        // Show the product/welcome script on application start.
+        private void ShowWelcome()
+        {
+            var defaultMarkdown = @"# Markdown Editor
+
+Welcome to **Markdown Editor** — a lightweight, fast editor with live preview for writing markdown content.
+
+## Features
+- Live HTML preview powered by Markdig
+- Simple, distraction-free editing surface
+- Lightweight and fast for everyday notes, README edits, and quick documentation
+
+## Getting started
+Start typing in the left pane. The preview updates automatically.
+
+For additional developer tools, guides, and resources visit [sqamanual.com](http://www.sqamanual.com).
+
+---
+
+Rendered by Markdown Editor
+";
+
+            rtbEditor.Text = Unindent(defaultMarkdown);
+            currentFilePath = null;
+            isDirty = false;
+            isWelcomeTemplate = true;
+            UpdateTitle();
+            UpdatePreview();
+            toolStripStatusLabel1.Text = "Welcome";
+        }
+
+        // Create a new (untitled) file when user requests New
         private void NewFile()
         {
             rtbEditor.Clear();
             currentFilePath = null;
             isDirty = false;
+            isWelcomeTemplate = false;
             UpdateTitle();
             UpdatePreview();
-            toolStripStatusLabel1.Text = "New file";
+            toolStripStatusLabel1.Text = "New file created";
         }
 
         private void LoadFile(string path)
@@ -68,6 +110,7 @@ namespace MarkdownEditor.WinForms
                 rtbEditor.Text = File.ReadAllText(path);
                 currentFilePath = path;
                 isDirty = false;
+                isWelcomeTemplate = false;
                 UpdateTitle();
                 UpdatePreview();
                 toolStripStatusLabel1.Text = $"Opened: {Path.GetFileName(path)}";
@@ -80,7 +123,8 @@ namespace MarkdownEditor.WinForms
 
         private void SaveFile()
         {
-            if (string.IsNullOrEmpty(currentFilePath))
+            // If the document is the welcome template (no path), treat like unsaved -> Save As
+            if (isWelcomeTemplate || string.IsNullOrEmpty(currentFilePath))
             {
                 SaveFileAs();
                 return;
@@ -113,13 +157,23 @@ namespace MarkdownEditor.WinForms
             if (saveFileDialog1.ShowDialog(this) == DialogResult.OK)
             {
                 currentFilePath = saveFileDialog1.FileName;
+                isWelcomeTemplate = false;
                 SaveFile();
             }
         }
 
         private void UpdateTitle()
         {
-            var name = string.IsNullOrEmpty(currentFilePath) ? "Untitled" : Path.GetFileName(currentFilePath);
+            string name;
+            if (isWelcomeTemplate)
+            {
+                name = "Welcome";
+            }
+            else
+            {
+                name = string.IsNullOrEmpty(currentFilePath) ? "Untitled" : Path.GetFileName(currentFilePath);
+            }
+
             var dirtyFlag = isDirty ? "*" : string.Empty;
             Text = $"{name}{dirtyFlag} - Markdown Editor";
         }
@@ -267,11 +321,62 @@ img {{
             }
         }
 
+        /// <summary>
+        /// Remove common leading indentation introduced by placing a verbatim string inside indented code.
+        /// This prevents the markdown lines from being interpreted as a code block (and rendered with the pre/code styles).
+        /// </summary>
+        private static string Unindent(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+
+            // Normalize newlines and split
+            var lines = text.Replace("\r\n", "\n").Split('\n');
+
+            // Skip completely empty lines when computing minimal indent
+            int minIndent = int.MaxValue;
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                int indent = 0;
+                foreach (var ch in line)
+                {
+                    if (ch == ' ' || ch == '\t') indent++;
+                    else break;
+                }
+                if (indent < minIndent) minIndent = indent;
+            }
+
+            if (minIndent == int.MaxValue || minIndent == 0)
+            {
+                // No common indent detected
+                return string.Join(Environment.NewLine, lines);
+            }
+
+            // Remove minIndent whitespace characters from the start of each line
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i];
+                if (string.IsNullOrWhiteSpace(line)) { lines[i] = string.Empty; continue; }
+
+                int remove = Math.Min(minIndent, line.TakeWhile(c => c == ' ' || c == '\t').Count());
+                lines[i] = line.Substring(remove);
+            }
+
+            return string.Join(Environment.NewLine, lines);
+        }
+
         private void MarkDirty()
         {
             if (!isDirty)
             {
                 isDirty = true;
+
+                // If user starts editing the welcome/template content, treat it as a new untitled document.
+                if (isWelcomeTemplate)
+                {
+                    isWelcomeTemplate = false;
+                }
+
                 UpdateTitle();
             }
         }
@@ -320,6 +425,26 @@ img {{
                 _suppressClosePrompt = true;
                 Close();
             }
+        }
+
+        // Handle keyboard shortcuts: Ctrl+N (new) and Ctrl+S (save)
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e.Control && e.KeyCode == Keys.N)
+                {
+                    e.SuppressKeyPress = true;
+                    if (!PromptSaveIfNeeded()) return;
+                    NewFile();
+                }
+                else if (e.Control && e.KeyCode == Keys.S)
+                {
+                    e.SuppressKeyPress = true;
+                    SaveFile();
+                }
+            }
+            catch { /* swallow */ }
         }
 
         private void rtbEditor_TextChanged(object sender, EventArgs e)

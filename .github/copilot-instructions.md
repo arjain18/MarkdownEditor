@@ -6,6 +6,9 @@
   - Remove the File menu
   - Remove Insert Image functionality
   - Increase window transparency (form opacity)
+- On app start, show a default 'Welcome' template named "Welcome" that includes the correct website name: [http://www.sqamanual.com](http://www.sqamanual.com).
+- The 'New' action should create an 'Untitled' document.
+- Enable form-level shortcuts: Ctrl+N = New, Ctrl+S = Save (KeyPreview + KeyDown).
 
 ## Code Style
 - Use specific formatting rules
