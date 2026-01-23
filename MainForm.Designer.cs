@@ -302,6 +302,17 @@ namespace MarkdownEditor.WinForms
             // Make the window slightly transparent to achieve a modern, airy feel.
             this.Opacity = 0.95D;
 
+            // set window icon from Resources\Markdown.ico (safe guard: only if file exists)
+            try
+            {
+                var exeIcon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+                if (exeIcon != null) this.Icon = exeIcon;
+            }
+            catch
+            {
+                // ignore icon load errors (prevents designer/build break on missing/corrupt icon)
+            }
+
             Name = "MainForm";
             Text = "Markdown Editor";
             topPanel.ResumeLayout(false);

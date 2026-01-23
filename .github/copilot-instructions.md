@@ -12,5 +12,6 @@
 - Follow naming conventions
 
 ## Project-Specific Rules
+- Project .csproj filename: MarkdownEditor.csproj
 - Custom requirement A
 - Custom requirement B

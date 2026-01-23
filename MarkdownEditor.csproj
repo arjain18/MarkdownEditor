@@ -6,15 +6,21 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+	  <ApplicationIcon>Resources\Markdown.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include=".github\copilot-instructions.md" />
-    <None Include="WpfApp1\WpfApp1.csproj" />
-  </ItemGroup>
+   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.44.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\Markdown.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
