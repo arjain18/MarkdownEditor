@@ -3,11 +3,11 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - 'v*'   # runs when you push a tag like v1.0.0
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest   # use Windows runner to produce .exe
 
     steps:
       - name: Checkout code
@@ -24,25 +24,20 @@ jobs:
       - name: Build project
         run: dotnet build "MarkdownEditor.csproj" --configuration Release
 
-      - name: Publish project
-        run: dotnet publish "MarkdownEditor.csproj" -c Release -o out
+      - name: Publish single-file executable
+        run: dotnet publish "MarkdownEditor.csproj" -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeAllContentForSelfExtract=true -o out
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-${{ github.ref_name }}   # tag name becomes artifact version
+          name: MarkdownEditor-${{ github.ref_name }}
           path: out/
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-${{ github.ref_name }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           name: Release ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
-          files: app-${{ github.ref_name }}/**
+          files: out/MarkdownEditor.exe   # attach the single exe directly
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
