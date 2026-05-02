@@ -10,7 +10,7 @@ namespace MarkdownEditor.WinForms
 {
     public partial class MainForm : Form
     {
-        private string currentFilePath;
+        private string? currentFilePath = null;
         private bool isDirty;
         private string? previewFilePath;
 
@@ -430,7 +430,7 @@ img {{
         }
 
         // Handle keyboard shortcuts: Ctrl+N (new) and Ctrl+S (save)
-        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        private void MainForm_KeyDown(object? sender, KeyEventArgs e)
         {
             try
             {
@@ -464,7 +464,7 @@ img {{
             UpdatePreview();
         }
 
-        private void webPreview_Navigating(object sender, WebBrowserNavigatingEventArgs e)
+        private void webPreview_Navigating(object? sender, WebBrowserNavigatingEventArgs e)
         {
             try
             {
@@ -533,12 +533,18 @@ img {{
                 if (this.Controls.Find("topPanel", true).Length > 0)
                 {
                     var panel = this.Controls["topPanel"];
-                    var btn = panel.Controls["btnTogglePreview"] as Button;
-                    if (btn != null)
+                    if (panel != null)
                     {
-                        btn.Text = splitContainer1.Panel2Collapsed ? "\ud83d\udc41  Show Preview" : "\ud83d\udc41  Hide Preview";
+                        var btn = panel.Controls["btnTogglePreview"] as Button;
+                        if (btn != null)
+                        {
+                            btn.Text = splitContainer1.Panel2Collapsed
+                                ? "\ud83d\udc41  Show Preview"
+                                : "\ud83d\udc41  Hide Preview";
+                        }
                     }
                 }
+
             }
             catch { }
         }
