@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'   # runs when you push a tag like v1.0.0
+      - 'v*'
 
 jobs:
   release:
@@ -30,17 +30,19 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app
+          name: app-${{ github.ref_name }}   # tag name becomes artifact version
           path: out/
 
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: app
+          name: app-${{ github.ref_name }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: app/**
+          name: Release ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          files: app-${{ github.ref_name }}/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
