@@ -12,12 +12,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4   # upgraded to Node.js 24 compatible
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4   # upgraded to Node.js 24 compatible
         with:
-          dotnet-version: '8.0.x'   # Adjust to your project version
+          dotnet-version: '8.0.x'   # adjust to your project version
 
       - name: Restore dependencies
         run: dotnet restore
@@ -29,7 +29,7 @@ jobs:
         run: dotnet publish -c Release -o out
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4   # latest version
         with:
           name: app
           path: out/
@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4   # latest version
         with:
           name: app
 
