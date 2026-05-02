@@ -4,11 +4,13 @@ on:
   workflow_dispatch:   # manual trigger from Actions tab
   push:
     tags:
-      - 'v*'           # also runs when you push a tag like v1.0.0
+      - 'v*'           # runs when you push a tag like v1.0.0
 
 jobs:
   build-and-release:
     runs-on: windows-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true   # opt in to Node.js 24
 
     steps:
       - name: Checkout code
