@@ -33,6 +33,11 @@ jobs:
           name: MarkdownEditor-${{ github.ref_name }}
           path: out/
 
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: MarkdownEditor-${{ github.ref_name }}
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
