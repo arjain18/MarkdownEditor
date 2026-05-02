@@ -17,7 +17,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore "MarkdownEditor.csproj"   # or your .slnx file
+        run: dotnet restore "MarkdownEditor.csproj"   # or your .sln file
 
       - name: Build project
         run: dotnet build "MarkdownEditor.csproj" --configuration Release
@@ -28,5 +28,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app
+          name: app-${{ github.run_number }}   # unique name per run
           path: out/
