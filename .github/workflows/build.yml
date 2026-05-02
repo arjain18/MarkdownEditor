@@ -4,7 +4,7 @@ on:
   workflow_dispatch:   # allows manual run from Actions tab
   push:
     tags:
-      - 'v*'   # still runs when you push a tag like v1.0.0
+      - 'v*'
 
 jobs:
   build:
@@ -12,24 +12,24 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4   # upgraded to Node.js 24 compatible
+        uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4   # upgraded to Node.js 24 compatible
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'   # adjust to your project version
+          dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore "MarkdownEditor.csproj"   # specify project or solution
 
       - name: Build project
-        run: dotnet build --configuration Release
+        run: dotnet build "MarkdownEditor.csproj" --configuration Release
 
       - name: Publish project
-        run: dotnet publish -c Release -o out
+        run: dotnet publish "MarkdownEditor.csproj" -c Release -o out
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4   # latest version
+        uses: actions/upload-artifact@v4
         with:
           name: app
           path: out/
@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4   # latest version
+        uses: actions/download-artifact@v4
         with:
           name: app
 
