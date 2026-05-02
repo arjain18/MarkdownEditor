@@ -1,0 +1,32 @@
+name: Publish
+
+on:
+  workflow_dispatch:   # manual trigger from Actions tab
+
+jobs:
+  publish:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore "MarkdownEditor.csproj"
+
+      - name: Build project
+        run: dotnet build "MarkdownEditor.csproj" --configuration Release
+
+      - name: Publish single-file executable
+        run: dotnet publish "MarkdownEditor.csproj" -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeAllContentForSelfExtract=true -o out
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MarkdownEditor-${{ github.run_number }}
+          path: out/
