@@ -1,9 +1,10 @@
 name: Build and Release
 
 on:
+  workflow_dispatch:   # allows manual run from Actions tab
   push:
     tags:
-      - 'v*'   # Runs when you push a tag like v1.0.0
+      - 'v*'   # still runs when you push a tag like v1.0.0
 
 jobs:
   build:
