@@ -1,10 +1,7 @@
-name: Build and Release
+name: Build
 
 on:
-  workflow_dispatch:   # allows manual run from Actions tab
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:   # manual trigger from Actions tab
 
 jobs:
   build:
@@ -20,7 +17,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore "MarkdownEditor.csproj"   # specify project or solution
+        run: dotnet restore "MarkdownEditor.csproj"   # or your .slnx file
 
       - name: Build project
         run: dotnet build "MarkdownEditor.csproj" --configuration Release
@@ -33,20 +30,3 @@ jobs:
         with:
           name: app
           path: out/
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: app/**
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
