@@ -1,13 +1,14 @@
 name: Build and Release
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:   # manual trigger
   push:
     tags:
-      - 'v*'
+      - 'v*'           # runs when you push a tag like v1.0.8
 
+# 👇 Permissions must be at the top level
 permissions:
-  contents: write   # <--- important
+  contents: write      # allow creating releases and uploading assets
 
 jobs:
   build-and-release:
