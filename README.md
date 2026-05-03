@@ -1,3 +1,4 @@
+<img width="2868" height="1250" alt="image" src="https://github.com/user-attachments/assets/0c146f60-a8ac-4cf3-afe7-d02bc6a4af8d" />
 Overview
 Markdown Editor is a lightweight, fast, and distraction‑free editor built with Windows Forms. It allows users to write Markdown content with a live HTML preview powered by the Markdig library. The editor is designed for everyday notes, README edits, and quick documentation.
 
